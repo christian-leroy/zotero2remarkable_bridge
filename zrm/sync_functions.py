@@ -25,9 +25,9 @@ def sync_to_rm_webdav(item, zot, webdav, folders):
     item_id = item["key"]
     attachments = zot.children(item_id)
     for entry in attachments:
-        if (
-            "contentType" in entry["data"]
-            and entry["data"]["contentType"] == "application/pdf"
+        if entry["data"].get("contentType") in (
+            "application/pdf",
+            "application/epub+zip",
         ):
             attachment_id = attachments[attachments.index(entry)]["key"]
             attachment_name = zot.item(attachment_id)["data"]["filename"]
@@ -171,7 +171,9 @@ def sync_to_rm_filetree(
 
     attachments = zotero_tree.list_children(handle)
     attachments = [
-        attachment for attachment in attachments if attachment.name.endswith(".pdf")
+        attachment
+        for attachment in attachments
+        if attachment.name.endswith((".pdf", ".epub"))
     ]
     logger.info(f"Syncing {len(attachments)} attachments to reMarkable")
 
